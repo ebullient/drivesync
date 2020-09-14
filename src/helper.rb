@@ -2,6 +2,7 @@ class Helper
   def self.file_ignored? path, config
     if config['inclusion'] == 'whitelist'
       config['whitelist'].each do |entry|
+        Log.log_debug "Check [#{path}] against [#{entry}]"
         return false if File.fnmatch(entry, path) and !exception_for?(config, path)
       end
       return true
@@ -33,7 +34,7 @@ class Helper
   def self.dir_glob pattern, follow_symlinks = false, flags = 0
     files = Array.new
 
-    Dir.glob(pattern).each do |file|
+    Dir.glob(pattern, File::FNM_DOTMATCH).each do |file|
       files.push(file)
 
       if follow_symlinks && File.symlink?(file) && File.directory?(file)
